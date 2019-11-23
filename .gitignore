@@ -35,5 +35,6 @@
 # My
 *.code-workspace
 *.in
+in?-?.txt
 golf/
 /golf_memo/
