@@ -1,4 +1,4 @@
-#line 1 "base.hpp"//5
+#line 1 "base.hpp"//7
 #ifndef __clang__
 #pragma GCC optimize ("O3")
 #endif
@@ -65,22 +65,22 @@ using ULL=unsigned long long;
 #endif
 #define tb <<'\t'
 #define sp <<' '
-#line 1 "base_util.hpp"//5b
+#line 1 "base_util.hpp"//7b
 #define BINOPa(t,u,op)t OP op(CS u&o)CS{RT t(*this)op##=o;}
 #define CMPOP(t,op,f1,f2,x)bool OP op(CS t&x)CS{RT f1 op f2;}
 #define CMPOPS(t,f1,f2,x)CMPOP(t,==,f1,f2,x)CMPOP(t,!=,f1,f2,x)\
 CMPOP(t,<,f1,f2,x)CMPOP(t,<=,f1,f2,x)CMPOP(t,>,f1,f2,x)CMPOP(t,>=,f1,f2,x)
-#line 1 "mod.hpp"//5b
+#line 1 "mod.hpp"//7b
 #ifndef MOD
 #define MOD 1000000007
 #endif
 #if !defined(FORCE_MOD)&&MOD!=1000000007&&MOD!=1000000009&&MOD!=998244353
 #error mod
 #endif
-#line 1 "power.hpp"//5bm
+#line 1 "power.hpp"//7bm
 TL<TN T>IL T power(T x,int n){T r(1);for(;n;n/=2){if(n%2)r*=x;x*=x;}RT r;}IL int pow_mod(int x,int n,int m){int r=1;
 for(;n;n/=2){if(n%2)r=r*x%m;x=x*x%m;}RT r;}
-#line 2001 "mod.hpp"//5b
+#line 2001 "mod.hpp"//7b
 IL CX int modulo(int a,int b){a%=b;RT a&&(a>0)!=(b>0)?a+b:a;}IL CX int divide(int a,int b){RT(a-modulo(a,b))/b;}
 TL<int d=MOD>struct MInt{
 /*!https://ei1333.github.io/luzhiled/snippets/other/mod-int.html*/
@@ -93,16 +93,16 @@ friend ostream&OP<<(ostream&o,CS MInt&m){RT o<<m.v;}friend istream&OP>>(istream&
 using mint=MInt<>;CX mint OP"" _m(ULL n){RT mint(n);}CX MInt<998244353>OP"" _m998244353(ULL n){RT MInt<998244353>(n);}
 CX MInt<1000000007>OP"" _m1e9_7(ULL n){RT MInt<1000000007>(n);}
 CX MInt<1000000009>OP"" _m1e9_9(ULL n){RT MInt<1000000009>(n);}
-#line 1 "typedefs.hpp"//5b
+#line 1 "typedefs.hpp"//7b
 using unit = tuple<>;using LD=long double;TL<TN T>using vec=vector<T>;
 TL<TN T>using vvec=vec<vec<T>>;TL<TN T>using vvvec=vec<vvec<T>>;TL<TN T>using vvvvec=vec<vvvec<T>>;
-using VI=vec<int>;using VC=vec<char>;using VB=vec<bool>;
-#line 1 "alias.hpp"//5b
+using VI=vec<int>;
+#line 1 "alias.hpp"//7b
 #define EB emplace_back
 #define PB push_back
 #define foldl accumulate
 #define scanl partial_sum
-#line 1 "util.hpp"//5b
+#line 1 "util.hpp"//7b
 TL<TN T>IL bool amax(T&v,CS T&a){RT v<a&&(v=a,1);}TL<TN T>IL bool amin(T&v,CS T&a){RT v>a&&(v=a,1);}
 TL<TN T>IL int sizeRAB(T t){RT t.size();}
 #define size sizeRAB
@@ -111,16 +111,18 @@ TL<TN T>IL CX CS T&clamp(CS T&a,CS T&l,CS T&r){RT a<l?l:r<a?r:a;}TL<TN V>IL void
 v.erase(unique(iter(v)),v.end());}TL<TN V>IL void uniq(V&v){sort(iter(v));uniq2(v);}
 #define leftmost_ge lower_bound
 #define leftmost_gt upper_bound
+TL<TN C,TN D>IL C rightmost_le(CS C&from,CS C&to,CS D&d){auto l=leftmost_gt(from,to,d);RT l==from?to:--l;}
+TL<TN C,TN D>IL C rightmost_lt(CS C&from,CS C&to,CS D&d){auto l=leftmost_ge(from,to,d);RT l==from?to:--l;}
 namespace rab{TL<TN I>IL bool is_in(I x,I l,I r){RT l<=x&&x<r;}TL<TN T>IL T fetch(CS T&d,CS vec<T>&v,int i){
 RT 0<=i&&i<size(v)?v[i]:d;}}
-#line 1 "debug.hpp"//5b
+#line 1 "debug.hpp"//7b
 TL<TN T>IL istream&OP>>(istream&s,vec<T>&v){for(auto&&p:v)s>>p;RT s;}TL<TN T,TN S>
 IL ostream&OP<<(ostream&s,CS pair<T,S>&p){RT s<<"("<<p.first<<","<<p.second<<")";}
 #define Rdebug1(sep, ...)IL ostream& OP<<(ostream&s,CS __VA_ARGS__&v){\
 int i=0;for(CS auto&e:v){i++&&s<<sep;s<<e;}RT s;}
 TL<TN T>Rdebug1(' ',vec<T>)TL<TN T,TN S>Rdebug1(' ',map<T,S>)TL<TN T>Rdebug1('\n',vvec<T>)
 TL<TN T,TN S>Rdebug1('\n',vec<map<T,S>>)
-#line 6001 "base.hpp"//5
+#line 6001 "base.hpp"//7
 signed main(){if(debug)cerr<<"MOD: "<<MOD ln;else cin.tie(0),cerr.tie(0),ios::sync_with_stdio(0);
 auto p=setprecision(20);cout<<fixed<<p;cerr<<fixed<<p;
 #ifdef GCJ_CASE
@@ -129,65 +131,56 @@ int T;cin>>T;times(T,t){cout<<"Case #"<<t+1<<": ";solve(t);}
 solve();
 #endif
 RT 0;}
-#line 1001 "5.cpp"//
+#line 1001 "7.cpp"//
 //#include "consts.hpp"
 
 void solve() {
-  int N, M, T; cin >> N >> M >> T;
-  VI X(M), Y(M);times(M, i){cin>>X[i]>>Y[i]; --X[i];--Y[i];}
-  if(T == 2) {
-    if(N == 2) {
-      cout << -1 ln;
-      return;
-    }
-    VI cnt(N, 1);
-    VI goal(N);
-    VC ans(M);
-    times(N, i) goal[i] = i;
-    rtimes(M, j) {
-      int a = goal[X[j]], b = goal[Y[j]];
-      if(cnt[a] >= N - 1) {
-        ans[j] = 'v';
-        goal[X[j]] = b;
-        --cnt[a];
-        ++cnt[b];
-      } else {
-        ans[j] = '^';
-        goal[Y[j]] = a;
-        --cnt[b];
-        ++cnt[a];
-      }
-    }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
-  } else {
-    // [復] 解説を見てbitsetを使うことを知った
-    vec<bitset<50000>> a(N);
-    times(N, i) a[i].set(i, true);
-    rtimes(M, j) {
-      a[X[j]] = a[Y[j]] |= a[X[j]];
-    }
-    times(N, i) a[0] &= a[i];
-    if(a[0].none()) {
-      cout << -1 ln;
-      return;
-    }
-    int goal;
-    times(N, i) if(a[0][i]) goal = i;
-    {if(debug)cerr<<"goal: "<<(goal)ln;}
-    VC ans(M);
-    VB ok(N);
-    ok[goal] = true;
-    rtimes(M, j) {
-      if(ok[X[j]]) {
-        ans[j] = '^';
-        ok[Y[j]] = true;
-      } else {
-        ans[j] = 'v';
-        ok[X[j]] = ok[X[j]] || ok[Y[j]];
-      }
-    }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
+  int N,Q;cin>>N;
+  VI C(N); times(N,i)cin>>C[i];
+  cin>>Q;
+
+  int even_sub=0, odd_sub=0, even_min=1ll<<60, odd_min=1ll<<60;
+  times(N, i) {
+    if(i % 2) amin(odd_min, C[i]);
+    else amin(even_min, C[i]);
   }
+
+  int ans = 0;
+
+  times(Q, q) {
+    int K, A; cin >> K >> A;
+    if(K==1) {
+      int X;cin>>X;swap(A, X); --X;
+      if(X % 2) {
+        if(C[X] - odd_sub >= A) {
+          C[X] -= A;
+          ans += A;
+          amin(odd_min, C[X] - odd_sub);
+        }
+      } else {
+        if(C[X] - even_sub >= A) {
+          C[X] -= A;
+          ans += A;
+          amin(even_min, C[X] - even_sub);
+        }
+      }
+    } else if(K==2){
+      if(even_min >= A) {
+        even_sub += A;
+        even_min -= A;
+        ans += (N + 1) / 2 * A;
+      }
+    } else {
+      if(odd_min >= A && even_min >= A) {
+        odd_sub += A;
+        odd_min -= A;
+        even_sub += A;
+        even_min -= A;
+        ans += N * A;
+      }
+    }
+    {if(debug)cerr<<'#'<<__LINE__ ln<<"  C:        "<<(C)ln<<"  even_sub: "<<(even_sub)ln<<"  odd_sub:  "<<(odd_sub)ln<<"  even_min: "<<(even_min)ln<<"  odd_min:  "<<(odd_min)ln;}
+  }
+
+  cout << ans ln;
 }

@@ -96,7 +96,7 @@ CX MInt<1000000009>OP"" _m1e9_9(ULL n){RT MInt<1000000009>(n);}
 #line 1 "typedefs.hpp"//5b
 using unit = tuple<>;using LD=long double;TL<TN T>using vec=vector<T>;
 TL<TN T>using vvec=vec<vec<T>>;TL<TN T>using vvvec=vec<vvec<T>>;TL<TN T>using vvvvec=vec<vvvec<T>>;
-using VI=vec<int>;using VC=vec<char>;using VB=vec<bool>;
+using WB=vvec<bool>;using VB=vec<bool>;
 #line 1 "alias.hpp"//5b
 #define EB emplace_back
 #define PB push_back
@@ -111,6 +111,8 @@ TL<TN T>IL CX CS T&clamp(CS T&a,CS T&l,CS T&r){RT a<l?l:r<a?r:a;}TL<TN V>IL void
 v.erase(unique(iter(v)),v.end());}TL<TN V>IL void uniq(V&v){sort(iter(v));uniq2(v);}
 #define leftmost_ge lower_bound
 #define leftmost_gt upper_bound
+TL<TN C,TN D>IL C rightmost_le(CS C&from,CS C&to,CS D&d){auto l=leftmost_gt(from,to,d);RT l==from?to:--l;}
+TL<TN C,TN D>IL C rightmost_lt(CS C&from,CS C&to,CS D&d){auto l=leftmost_ge(from,to,d);RT l==from?to:--l;}
 namespace rab{TL<TN I>IL bool is_in(I x,I l,I r){RT l<=x&&x<r;}TL<TN T>IL T fetch(CS T&d,CS vec<T>&v,int i){
 RT 0<=i&&i<size(v)?v[i]:d;}}
 #line 1 "debug.hpp"//5b
@@ -133,61 +135,25 @@ RT 0;}
 //#include "consts.hpp"
 
 void solve() {
-  int N, M, T; cin >> N >> M >> T;
-  VI X(M), Y(M);times(M, i){cin>>X[i]>>Y[i]; --X[i];--Y[i];}
-  if(T == 2) {
-    if(N == 2) {
-      cout << -1 ln;
-      return;
+  int N,Q;cin>>N>>Q;
+
+  WB ans(N, VB(N)), bns;
+
+  times(Q, q) {
+    int K, A; cin >> K >> A; --A;
+    if(K==1) {
+      int B; cin >> B; --B;
+      ans[A][B] = true;
+    } else if(K==2) {
+      times(N, j) ans[A][j] = ans[A][j] || ans[j][A];
+    } else{
+      bns = ans;
+      times(N, j) times(N, k) if(A!=k) ans[A][k] = ans[A][k] || bns[A][j] && bns[j][k];
     }
-    VI cnt(N, 1);
-    VI goal(N);
-    VC ans(M);
-    times(N, i) goal[i] = i;
-    rtimes(M, j) {
-      int a = goal[X[j]], b = goal[Y[j]];
-      if(cnt[a] >= N - 1) {
-        ans[j] = 'v';
-        goal[X[j]] = b;
-        --cnt[a];
-        ++cnt[b];
-      } else {
-        ans[j] = '^';
-        goal[Y[j]] = a;
-        --cnt[b];
-        ++cnt[a];
-      }
-    }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
-  } else {
-    // [復] 解説を見てbitsetを使うことを知った
-    vec<bitset<50000>> a(N);
-    times(N, i) a[i].set(i, true);
-    rtimes(M, j) {
-      a[X[j]] = a[Y[j]] |= a[X[j]];
-    }
-    times(N, i) a[0] &= a[i];
-    if(a[0].none()) {
-      cout << -1 ln;
-      return;
-    }
-    int goal;
-    times(N, i) if(a[0][i]) goal = i;
-    {if(debug)cerr<<"goal: "<<(goal)ln;}
-    VC ans(M);
-    VB ok(N);
-    ok[goal] = true;
-    rtimes(M, j) {
-      if(ok[X[j]]) {
-        ans[j] = '^';
-        ok[Y[j]] = true;
-      } else {
-        ans[j] = 'v';
-        ok[X[j]] = ok[X[j]] || ok[Y[j]];
-      }
-    }
-    times(M, j) cout << (char)ans[j];
+  }
+
+  times(N, j) {
+    times(N, k) cout << (ans[j][k] ? 'Y' : 'N');
     cout ln;
   }
 }

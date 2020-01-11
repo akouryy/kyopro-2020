@@ -96,7 +96,7 @@ CX MInt<1000000009>OP"" _m1e9_9(ULL n){RT MInt<1000000009>(n);}
 #line 1 "typedefs.hpp"//5b
 using unit = tuple<>;using LD=long double;TL<TN T>using vec=vector<T>;
 TL<TN T>using vvec=vec<vec<T>>;TL<TN T>using vvvec=vec<vvec<T>>;TL<TN T>using vvvvec=vec<vvvec<T>>;
-using VI=vec<int>;using VC=vec<char>;using VB=vec<bool>;
+using VI=vec<int>;
 #line 1 "alias.hpp"//5b
 #define EB emplace_back
 #define PB push_back
@@ -111,6 +111,8 @@ TL<TN T>IL CX CS T&clamp(CS T&a,CS T&l,CS T&r){RT a<l?l:r<a?r:a;}TL<TN V>IL void
 v.erase(unique(iter(v)),v.end());}TL<TN V>IL void uniq(V&v){sort(iter(v));uniq2(v);}
 #define leftmost_ge lower_bound
 #define leftmost_gt upper_bound
+TL<TN C,TN D>IL C rightmost_le(CS C&from,CS C&to,CS D&d){auto l=leftmost_gt(from,to,d);RT l==from?to:--l;}
+TL<TN C,TN D>IL C rightmost_lt(CS C&from,CS C&to,CS D&d){auto l=leftmost_ge(from,to,d);RT l==from?to:--l;}
 namespace rab{TL<TN I>IL bool is_in(I x,I l,I r){RT l<=x&&x<r;}TL<TN T>IL T fetch(CS T&d,CS vec<T>&v,int i){
 RT 0<=i&&i<size(v)?v[i]:d;}}
 #line 1 "debug.hpp"//5b
@@ -133,61 +135,84 @@ RT 0;}
 //#include "consts.hpp"
 
 void solve() {
-  int N, M, T; cin >> N >> M >> T;
-  VI X(M), Y(M);times(M, i){cin>>X[i]>>Y[i]; --X[i];--Y[i];}
-  if(T == 2) {
-    if(N == 2) {
-      cout << -1 ln;
-      return;
+  int T; cin>>T;
+  times(T, t) {
+    string S; cin>>S;
+    int N = size(S);
+    bool is_10pow = S[0] == '1';
+    uptil(1, N-1, i) is_10pow = is_10pow && S[i] == '0';
+    is_10pow = is_10pow && (S[N-1] == '0' || S[N-1] == '1');
+    if(is_10pow) {
+      cout << string(N-2, '9') ln;
+      continue;
     }
-    VI cnt(N, 1);
-    VI goal(N);
-    VC ans(M);
-    times(N, i) goal[i] = i;
-    rtimes(M, j) {
-      int a = goal[X[j]], b = goal[Y[j]];
-      if(cnt[a] >= N - 1) {
-        ans[j] = 'v';
-        goal[X[j]] = b;
-        --cnt[a];
-        ++cnt[b];
-      } else {
-        ans[j] = '^';
-        goal[Y[j]] = a;
-        --cnt[b];
-        ++cnt[a];
+
+    bool ok=false;
+    downto(N-1, max(N-10, 0ll), lim) {
+      VI cnt(10);
+      times(lim, i) {
+        cnt[S[i] - '0'] ^= 1;
+      }
+      VI rest; times(10, d) if(cnt[d]) rest.PB(d);
+      {if(debug)cerr<<'#'<<__LINE__ ln<<"  S:    "<<(S)ln<<"  lim:  "<<(lim)ln<<"  rest: "<<(rest)ln;}
+      if(size(rest) <= N-lim) {
+        uptil(size(rest), N-lim, o) rest.PB(9);
+
+        if(lim == N) {
+          cout << S ln;
+          ok=true;
+          break;
+        } else {
+          sort(iter(rest));
+          auto it = rightmost_lt(iter(rest), S[lim] - '0');
+          if(it != end(rest)) {
+            S[lim] = '0' + *it;
+            rest.erase(it);
+            sort(iter(rest));
+            uptil(lim + 1, N, i) {
+              S[i] = rest[N - 1 - i] + '0';
+            }
+            cout << S ln;
+            ok=true;
+            break;
+          }
+        }
+      }
+
+      //2
+      {if(debug)cerr<<"lim: "<<(lim)ln;}
+      if(lim > 0) {
+        string T = S;
+        {
+          int g;
+          for(g = lim-1; T[g] == '0' && (T[g] = '9'); --g);
+          --T[g];
+        }
+        VI cnt(10);
+        times(lim, i) {
+          cnt[T[i] - '0'] ^= 1;
+        }
+        VI rest; times(10, d) if(cnt[d]) rest.PB(d);
+        {if(debug)cerr<<'#'<<__LINE__ ln<<"  T:    "<<(T)ln<<"  lim:  "<<(lim)ln<<"  rest: "<<(rest)ln;}
+        if(size(rest) != N-lim) continue;
+
+        if(lim == N) {
+          cout << T ln;
+          ok=true;
+          break;
+        } else {
+          sort(iter(rest));
+          {if(debug)cerr<<'#'<<__LINE__ ln<<"  T:    "<<(T)ln<<"  rest: "<<(rest)ln<<"  lim:  "<<(lim)ln<<"  N:    "<<(N)ln;}
+          uptil(lim, N, i) {
+            // dd i; N-1-i; T[i]; rest[N-1-i];
+            T[i] = rest[N - 1 - i] + '0';
+          }
+          cout << T ln;
+          ok=true;
+          break;
+        }
       }
     }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
-  } else {
-    // [復] 解説を見てbitsetを使うことを知った
-    vec<bitset<50000>> a(N);
-    times(N, i) a[i].set(i, true);
-    rtimes(M, j) {
-      a[X[j]] = a[Y[j]] |= a[X[j]];
-    }
-    times(N, i) a[0] &= a[i];
-    if(a[0].none()) {
-      cout << -1 ln;
-      return;
-    }
-    int goal;
-    times(N, i) if(a[0][i]) goal = i;
-    {if(debug)cerr<<"goal: "<<(goal)ln;}
-    VC ans(M);
-    VB ok(N);
-    ok[goal] = true;
-    rtimes(M, j) {
-      if(ok[X[j]]) {
-        ans[j] = '^';
-        ok[Y[j]] = true;
-      } else {
-        ans[j] = 'v';
-        ok[X[j]] = ok[X[j]] || ok[Y[j]];
-      }
-    }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
+    assert(ok);
   }
 }

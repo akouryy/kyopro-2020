@@ -96,7 +96,7 @@ CX MInt<1000000009>OP"" _m1e9_9(ULL n){RT MInt<1000000009>(n);}
 #line 1 "typedefs.hpp"//5b
 using unit = tuple<>;using LD=long double;TL<TN T>using vec=vector<T>;
 TL<TN T>using vvec=vec<vec<T>>;TL<TN T>using vvvec=vec<vvec<T>>;TL<TN T>using vvvvec=vec<vvvec<T>>;
-using VI=vec<int>;using VC=vec<char>;using VB=vec<bool>;
+using VS=vec<string>;using VI=vec<int>;using VPII=vec<pair<int, int>>;using WI=vvec<int>;using HIVPII=map<int, vec<pair<int, int>>>;
 #line 1 "alias.hpp"//5b
 #define EB emplace_back
 #define PB push_back
@@ -111,6 +111,8 @@ TL<TN T>IL CX CS T&clamp(CS T&a,CS T&l,CS T&r){RT a<l?l:r<a?r:a;}TL<TN V>IL void
 v.erase(unique(iter(v)),v.end());}TL<TN V>IL void uniq(V&v){sort(iter(v));uniq2(v);}
 #define leftmost_ge lower_bound
 #define leftmost_gt upper_bound
+TL<TN C,TN D>IL C rightmost_le(CS C&from,CS C&to,CS D&d){auto l=leftmost_gt(from,to,d);RT l==from?to:--l;}
+TL<TN C,TN D>IL C rightmost_lt(CS C&from,CS C&to,CS D&d){auto l=leftmost_ge(from,to,d);RT l==from?to:--l;}
 namespace rab{TL<TN I>IL bool is_in(I x,I l,I r){RT l<=x&&x<r;}TL<TN T>IL T fetch(CS T&d,CS vec<T>&v,int i){
 RT 0<=i&&i<size(v)?v[i]:d;}}
 #line 1 "debug.hpp"//5b
@@ -129,65 +131,86 @@ int T;cin>>T;times(T,t){cout<<"Case #"<<t+1<<": ";solve(t);}
 solve();
 #endif
 RT 0;}
-#line 1001 "5.cpp"//
-//#include "consts.hpp"
+#line 1 "consts.hpp"//5
+int di4[]={-1,0,1,0},dj4[]={0,1,0,-1},di8[]={-1,-1,0,1,1,1,0,-1},dj8[]={0,1,1,1,0,-1,-1,-1,-1},
+di_knight[]={-2,-1,1,2,2,1,-1,-2},dj_knight[]={1,2,2,1,-1,-2,-2,-1};namespace dict{
+[[maybe_unused]]CX char
+YES[]="YES",Yes[]="Yes",yes[]="yes",NO[]="NO",No[]="No",no[]="no",WIN[]="WIN",Win[]="Win",win[]="win",
+LOSE[]="LOSE",Lose[]="Lose",lose[]="lose",OK[]="OK",ok[]="ok",NG[]="NG",ng[]="ng",NA[]="NA",na[]="na",
+AC[]="AC",ac[]="ac",WA[]="WA",wa[]="wa",FIRST[]="FIRST",First[]="First",first[]="first",
+SECOND[]="SECOND",Second[]="Second",second[]="second",
+POSSIBLE[]="POSSIBLE",Possible[]="Possible",possible[]="possible",
+IMPOSSIBLE[]="IMPOSSIBLE",Impossible[]="Impossible",impossible[]="impossible",
+PRIME[]="PRIME",Prime[]="Prime",prime[]="prime",
+NOT_PRIME[]="NOT PRIME",Not_Prime[]="Not Prime",not_prime[]="not prime",
+UNBOUNDED[]="UNBOUNDED",Unbounded[]="Unbounded",unbounded[]="unbounded",
+ALICE[]="ALICE",Alice[]="Alice",alice[]="alice",BOB[]="BOB",Bob[]="Bob",bob[]="bob",
+BROWN[]="BROWN",Brown[]="Brown",brown[]="brown",SAME[]="SAME",Same[]="Same",same[]="same",
+DIFFERENT[]="DIFFERENT",Different[]="Different",different[]="different",
+TAKAHASHI[]="TAKAHASHI",Takahashi[]="Takahashi",takahashi[]="takahashi",AOKI[]="AOKI",Aoki[]="Aoki",aoki[]="aoki";}
+#line 1 "uf.hpp"//5
+TL<class T=int,class Adder=plus<T>,class Inverser=negate<T>>struct UnionFind{
+/*!
+http://noshi91.hatenablog.com/entry/2018/05/30/191943
+https://en.wikipedia.org/wiki/Disjoint-set_data_structure
+https://qiita.com/drken/items/cce6fc5c579051e64fab
+*/
+int n,*par,*zs/*sizes*/;
+T*pot;bool dl;Adder add;Inverser inv;explicit UnionFind(int n,T t0=0,bool dl=false):
+n(n),par(new int[n]),zs(new int[n]),pot(new T[n]),dl(dl){clear(t0);}void clear(T t0=0){times(n,i)par[i]=i;
+fill(zs,zs+n,1);fill(pot,pot+n,t0);}~UnionFind(){if(dl){delete[]par;delete[]zs;delete[]pot;}}int size(){RT n;}
+int root(int i){int p=par[i];if(p==i)RT i;int r=root(p);pot[i]+=pot[p];RT par[i]=r;}
+bool is_same(int i,int j){RT root(i)==root(j);}bool is_all_same(){int r=root(0);uptil(1,n,i)if(root(i)^r)RT 0;RT 1;}
+bool merge(int i,int j,T pdiff=0){i=root(i);j=root(j);if(i==j)RT 0;if(zs[i]>zs[j]){swap(i,j);pdiff=inv(pdiff);}
+par[i]=j;zs[j]+=zs[i];pot[i]=pdiff;RT 1;}T diff(int i,int j){root(i);root(j);RT add(pot[i],inv(pot[j]));}};
+using unionfind=UnionFind<>;
+#line 3001 "5.cpp"//
 
 void solve() {
-  int N, M, T; cin >> N >> M >> T;
-  VI X(M), Y(M);times(M, i){cin>>X[i]>>Y[i]; --X[i];--Y[i];}
-  if(T == 2) {
-    if(N == 2) {
-      cout << -1 ln;
-      return;
-    }
-    VI cnt(N, 1);
-    VI goal(N);
-    VC ans(M);
-    times(N, i) goal[i] = i;
-    rtimes(M, j) {
-      int a = goal[X[j]], b = goal[Y[j]];
-      if(cnt[a] >= N - 1) {
-        ans[j] = 'v';
-        goal[X[j]] = b;
-        --cnt[a];
-        ++cnt[b];
-      } else {
-        ans[j] = '^';
-        goal[Y[j]] = a;
-        --cnt[b];
-        ++cnt[a];
+// HWH("S")QQ(XYL)
+/* <foxy.memo-area> */
+int H;int W;int Q;cin>>H;cin>>W;VS S(H);times(H,Ri_0){cin>>S[Ri_0];}cin>>Q;VI I(
+Q);VI J(Q);VI L(Q);times(Q,Ri_0){cin>>I[Ri_0];--I[Ri_0];cin>>J[Ri_0];--J[Ri_0];cin>>L[Ri_0];}
+/* </foxy.memo-area> */
+
+  VPII g; times(Q, k) g.PB(make_pair(L[k], k));
+  sort(iter(g)); reverse(iter(g));
+
+  WI space(H+1, VI(W+1, 1ll<<60));
+  times(H+1, i) space[i][W] = 0;
+  times(W+1, j) space[H][j] = 0;
+  rtimes(H, i) rtimes(W, j)
+  space[i][j] = S[i][j] == '#' ? 0 : 1 + min(min(space[i][j+1], space[i+1][j]), space[i+1][j+1]);
+  {if(debug)cerr<<"space: "<<(space)ln;}
+  HIVPII rev;
+  times(H, i) times(W, j) rev[space[i][j]].PB(make_pair(i, j));
+
+  VI ans(Q);
+  UnionFind<> uf(H * W);
+  int l_now = max(H, W) + 1;
+  for(auto &tmp : g) {
+    int k = tmp.second;
+    downto(l_now-1, L[k], l) {
+      for(auto &ij : rev[l]) {
+        int i, j; tie(i, j) = ij;
+        times(4, d) {
+          int ii = i + di4[d], jj = j + dj4[d];
+          if(0 <= ii && ii < H && 0 <= jj && jj < W && space[ii][jj] >= l) {
+            uf.merge(i * W + j, ii * W + jj);
+          }
+        }
       }
     }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
-  } else {
-    // [復] 解説を見てbitsetを使うことを知った
-    vec<bitset<50000>> a(N);
-    times(N, i) a[i].set(i, true);
-    rtimes(M, j) {
-      a[X[j]] = a[Y[j]] |= a[X[j]];
-    }
-    times(N, i) a[0] &= a[i];
-    if(a[0].none()) {
-      cout << -1 ln;
-      return;
-    }
-    int goal;
-    times(N, i) if(a[0][i]) goal = i;
-    {if(debug)cerr<<"goal: "<<(goal)ln;}
-    VC ans(M);
-    VB ok(N);
-    ok[goal] = true;
-    rtimes(M, j) {
-      if(ok[X[j]]) {
-        ans[j] = '^';
-        ok[Y[j]] = true;
-      } else {
-        ans[j] = 'v';
-        ok[X[j]] = ok[X[j]] || ok[Y[j]];
+    if(debug) {
+      cerr << k ln;
+      times(H, i) {
+        times(W, j) cerr << uf.root(i * W + j) sp;
+        cerr ln;
       }
     }
-    times(M, j) cout << (char)ans[j];
-    cout ln;
+    l_now = L[k];
+    ans[k] = uf.zs[uf.root(I[k] * W + J[k])];
   }
+
+  times(Q, k) cout << ans[k] ln;
 }

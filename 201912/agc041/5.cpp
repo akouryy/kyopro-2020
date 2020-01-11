@@ -29,5 +29,34 @@ void solve() {
     }
     times(M, j) cout << (char)ans[j];
     cout ln;
+  } else {
+    // [復] 解説を見てbitsetを使うことを知った
+    vec<bitset<50000>> a(N);
+    times(N, i) a[i].set(i, true);
+    rtimes(M, j) {
+      a[X[j]] = a[Y[j]] |= a[X[j]];
+    }
+    times(N, i) a[0] &= a[i];
+    if(a[0].none()) {
+      cout << -1 ln;
+      return;
+    }
+    int goal;
+    times(N, i) if(a[0][i]) goal = i;
+    dd goal;
+    VC ans(M);
+    VB ok(N);
+    ok[goal] = true;
+    rtimes(M, j) {
+      if(ok[X[j]]) {
+        ans[j] = '^';
+        ok[Y[j]] = true;
+      } else {
+        ans[j] = 'v';
+        ok[X[j]] = ok[X[j]] || ok[Y[j]];
+      }
+    }
+    times(M, j) cout << (char)ans[j];
+    cout ln;
   }
 }
