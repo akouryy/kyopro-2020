@@ -36,8 +36,9 @@
 ~*
 *.code-workspace
 *.in
+*.out.dSYM/
+euler/
+golf/
 in?.txt
 in?-?.txt
-golf/
 /golf_memo/
-euler/
